@@ -1,5 +1,5 @@
 #lang racket/base
-(require (for-syntax racket/base) racket/set)
+(require (for-syntax racket/base) racket/set "doc.rkt" syntax/modresolve)
 
 (define-syntax (for/union stx)
   (syntax-case stx ()
@@ -33,8 +33,10 @@
 (define (imported-identifiers mods ev)
   (for/union ([mod (in-set mods)]
               #:when (ev #`(module-declared? #,mod)))
-    (let-values ([(a b) (ev #`(module->exports #,mod))])
-      (set-union (merge-exports a) (merge-exports b)))))
+    (set-union
+     (get-datum (resolve-module-path-index mod))
+     (let-values ([(a b) (ev #`(module->exports #,mod))])
+       (set-union (merge-exports a) (merge-exports b))))))
 
 (define (ids fpe)
   (define ns (make-base-namespace))
