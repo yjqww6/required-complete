@@ -1,5 +1,5 @@
 #lang racket/base
-(require (for-syntax racket/base) racket/set)
+(require (for-syntax racket/base) racket/set "transform.rkt")
 
 (define-syntax (for/union stx)
   (syntax-case stx ()
@@ -39,7 +39,7 @@
 
 (define (ids fpe)
   (define ns (make-base-namespace))
-  (define mods (imported-modules fpe ns))
+  (define mods (imported-modules (shrink-module fpe) ns))
   (imported-identifiers mods ns))
 
 (provide ids)
