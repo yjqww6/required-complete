@@ -24,22 +24,22 @@
                     (module-compiled-submodules mod #f)
                     (module-compiled-submodules mod #t)))))
 
-(define (imported-modules fpe ev)
-  (let ([cpl (compile fpe)])
-    (ev fpe)
+(define (imported-modules fpe ns)
+  (let ([cpl (parameterize ([current-namespace ns])
+               (compile fpe))])
+    (eval cpl ns)
     (for/union ([mod (in-set (walk cpl))])
       (merge-imports (module-compiled-imports mod)))))
 
-(define (imported-identifiers mods ev)
+(define (imported-identifiers mods ns)
   (for/union ([mod (in-set mods)]
-              #:when (ev #`(module-declared? #,mod)))
-    (let-values ([(a b) (ev #`(module->exports #,mod))])
+              #:when (eval #`(module-declared? #,mod) ns))
+    (let-values ([(a b) (eval #`(module->exports #,mod) ns)])
       (set-union (merge-exports a) (merge-exports b)))))
 
 (define (ids fpe)
   (define ns (make-base-namespace))
-  (define (ev v) (eval v ns))
-  (define mods (imported-modules fpe ev))
-  (imported-identifiers mods ev))
+  (define mods (imported-modules fpe ns))
+  (imported-identifiers mods ns))
 
 (provide ids)
