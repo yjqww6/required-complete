@@ -1,5 +1,5 @@
 #lang racket/base
-(require (for-syntax racket/base) racket/set "transform.rkt")
+(require (for-syntax racket/base) racket/set "shrink.rkt")
 
 (define-syntax (for/union stx)
   (syntax-case stx ()
