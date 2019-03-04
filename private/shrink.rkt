@@ -12,10 +12,10 @@
 
     (define (ext-module-path? r)
       (syntax-case* r (submod quote) (λ (a b) (free-identifier=? a b #f #f))
-        [(submod "." ?id ...) #f]
-        [(submod ".." ?id ...) #f]
-        [(submod ?id) #f]
-        [(quote ?id) #f]
+        [(submod "." _ ...) #f]
+        [(submod ".." _ ...) #f]
+        [(submod (quote _) _ ...) #f]
+        [(quote _) #f]
         [_ #t]))
 
     (define (phaseless-spec spec)
