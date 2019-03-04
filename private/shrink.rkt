@@ -11,7 +11,7 @@
         (set! raw-specs (cons sth raw-specs))))
 
     (define (ext-module-path? r)
-      (syntax-case r (submod)
+      (syntax-case* r (submod) (λ (a b) (free-identifier=? a b #f #f))
         [(submod "." ?id ...) #f]
         [(submod ".." ?id ...) #f]
         [_ #t]))
@@ -49,8 +49,9 @@
          (phaseless-spec* #'(?phaseless-spec ...))]
         [(for-label ?phaseless-spec ...)
          (phaseless-spec* #'(?phaseless-spec ...))]
-        [(just-meta ?level ?phaseless-spec ...)
-         (phaseless-spec* #'(?phaseless-spec ...))]
+        [(just-meta ?level ?raw-require-spec ...)
+         (for ([spec (in-syntax #'(?raw-require-spec ...))])
+           (raw-require-spec spec))]
         [?phaseless-spec
          (phaseless-spec #'?phaseless-spec)]))
 
