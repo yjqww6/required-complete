@@ -11,9 +11,11 @@
         (set! raw-specs (cons sth raw-specs))))
 
     (define (ext-module-path? r)
-      (syntax-case* r (submod) (λ (a b) (free-identifier=? a b #f #f))
+      (syntax-case* r (submod quote) (λ (a b) (free-identifier=? a b #f #f))
         [(submod "." ?id ...) #f]
         [(submod ".." ?id ...) #f]
+        [(submod ?id) #f]
+        [(quote ?id) #f]
         [_ #t]))
 
     (define (phaseless-spec spec)
